@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireAI — Recruiter Center</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --ink: #0a0a14; --bg: #f3f4f8; --surface: #fff; --muted: #6b7280; --accent: #2563eb; --border: #e5e7eb; --sidebar-w: 260px;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        body { font-family: var(--font-sans); background: var(--bg); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased; }
+
+        nav { background: #0f172a; height: 62px; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+        .nav-left { display: flex; align-items: center; gap: 12px; }
+        .logo-mark { width: 32px; height: 32px; background: #2563eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 14px; color: #fff; }
+        .nav-brand { font-family: var(--font-display); font-weight: 700; font-size: 17px; color: #fff; letter-spacing: -0.3px; }
+        .nav-badge { background: rgba(5,150,105,0.2); color: #34d399; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; border: 1px solid rgba(5,150,105,0.3); }
+        .btn-logout { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.1); padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; transition: 0.2s; }
+        .btn-logout:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+        .layout { display: flex; flex: 1; }
+        aside { width: var(--sidebar-w); background: #fff; border-right: 1px solid var(--border); padding: 28px 20px; display: flex; flex-direction: column; gap: 6px; position: sticky; top: 62px; height: calc(100vh - 62px); overflow-y: auto; }
+        .sidebar-section { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.8px; padding: 12px 12px 6px; }
+        .sidebar-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 9px; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; transition: 0.15s; text-decoration: none; }
+        .sidebar-item:hover { background: #f1f5f9; color: var(--ink); }
+        .sidebar-item.active { background: #eff6ff; color: var(--accent); }
+        .course-pill { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #374151; background: #f9fafb; border: 1px solid var(--border); margin-bottom: 4px; }
+        .course-pill .count { font-size: 11px; background: #e0e7ff; color: var(--accent); padding: 2px 7px; border-radius: 10px; font-weight: 700; }
+
+        main { flex: 1; padding: 36px 32px; max-width: 900px; }
+        .page-header { margin-bottom: 28px; }
+        .page-title { font-family: var(--font-display); font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+        .page-sub { font-size: 14px; color: var(--muted); margin-top: 4px; }
+
+        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+        .stat-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 22px 24px; }
+        .stat-card-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .stat-card-num { font-family: var(--font-display); font-size: 32px; font-weight: 800; color: var(--ink); line-height: 1; letter-spacing: -1px; }
+        .stat-card-sub { font-size: 12px; font-weight: 500; color: var(--muted); margin-top: 4px; }
+        .stat-card.blue { border-top: 3px solid #2563eb; } .stat-card.green { border-top: 3px solid #059669; } .stat-card.amber { border-top: 3px solid #d97706; }
+
+        .panels { display: grid; grid-template-columns: 1fr 1.4fr; gap: 20px; }
+        .panel { background: #fff; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+        .panel-head { padding: 22px 24px; border-bottom: 1px solid var(--border); }
+        .panel-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; }
+        .panel-body { padding: 24px; }
+
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+        .field input, .field select, .field textarea { width: 100%; padding: 10px 13px; border: 1.5px solid var(--border); border-radius: 10px; font-family: var(--font-sans); font-size: 14px; background: #fafafa; outline: none; transition: 0.2s; resize: vertical; }
+        .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); background: #fff; }
+        .field .field-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+        .field .field-row label { margin-bottom: 0; }
+
+        .ai-trigger { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; color: var(--accent); cursor: pointer; padding: 4px 10px; border-radius: 6px; background: #eff6ff; border: 1px solid #bfdbfe; transition: 0.15s; }
+        .ai-trigger:hover { background: #dbeafe; }
+        .generating { color: var(--muted); font-style: italic; font-size: 13px; display: none; margin-top: 6px; font-weight: 500; }
+
+        .btn { padding: 11px 20px; border: none; border-radius: 10px; font-family: var(--font-sans); font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%; }
+        .btn-primary { background: #1d4ed8; color: #fff; }
+        .btn-primary:hover { background: #1e40af; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(29,78,216,0.25); }
+        .btn-success { background: #059669; color: #fff; }
+        .btn-success:hover { background: #047857; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(5,150,105,0.25); }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-left"><div class="logo-mark">H</div><span class="nav-brand">HireAI</span><span class="nav-badge">HR Center</span></div>
+        <a href="/logout" class="btn-logout">Sign Out</a>
+    </nav>
+    <div class="layout">
+        <aside>
+            <div class="sidebar-section">Navigation</div><a class="sidebar-item active" href="/dashboard"><span>⚡</span> Overview</a>
+            <div class="sidebar-section" style="margin-top:8px">Active Positions</div>
+            {% for c in course_data %}<div class="course-pill"><span>{{ c.name }}</span><span class="count">{{ c.count }}</span></div>{% endfor %}
+        </aside>
+        <main>
+            <div class="page-header"><h1 class="page-title">Recruitment Dashboard</h1><p class="page-sub">Manage positions and rank candidates with AI</p></div>
+            <div class="stats-row">
+                <div class="stat-card blue"><div class="stat-card-label">Total Positions</div><div class="stat-card-num">{{ course_data | length }}</div><div class="stat-card-sub">Active job listings</div></div>
+                <div class="stat-card green"><div class="stat-card-label">Total Applicants</div><div class="stat-card-num">{{ course_data | sum(attribute='count') }}</div><div class="stat-card-sub">Across all positions</div></div>
+                <div class="stat-card amber"><div class="stat-card-label">AI Powered</div><div class="stat-card-num">∞</div><div class="stat-card-sub">Gemini + Semantic Match</div></div>
+            </div>
+            <div class="panels">
+                <div class="panel">
+                    <div class="panel-head"><span class="panel-title">Post a Position</span></div>
+                    <div class="panel-body">
+                        <form action="/add_course" method="POST">
+                            <div class="field"><label>Job Title</label><input type="text" id="cn" name="course_name" placeholder="e.g. Data Scientist" required></div>
+                            <div class="field">
+                                <div class="field-row"><label>Job Description</label><span class="ai-trigger" onclick="aiGenerate('cn', 'cj', 'gen1')">✨ AI Generate</span></div>
+                                <textarea name="default_jd" id="cj" rows="6" placeholder="Describe the role..." required></textarea>
+                                <div class="generating" id="gen1">Generating with Gemini AI...</div>
+                            </div>
+                            <button class="btn btn-primary" type="submit">Publish Position</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-head"><span class="panel-title">AI Candidate Ranker</span></div>
+                    <div class="panel-body">
+                        <form action="/rank_candidates" method="POST">
+                            <div class="field">
+                                <label>Select Position</label>
+                                <select name="course" id="cs" onchange="prefillJD()" required><option value="" disabled selected>Choose a position...</option>{% for c in course_data %}<option value="{{ c.name }}" data-jd="{{ c.default_jd }}">{{ c.name }} — {{ c.count }} applicants</option>{% endfor %}</select>
+                            </div>
+                            <div class="field">
+                                <div class="field-row"><label>Ranking Criteria (JD)</label><span class="ai-trigger" onclick="aiGenerate('cs', 'rj', 'gen2')">✨ AI Optimize</span></div>
+                                <textarea name="jd" id="rj" rows="8" placeholder="Paste the job description..." required></textarea>
+                                <div class="generating" id="gen2">Generating with Gemini AI...</div>
+                            </div>
+                            <button class="btn btn-success" type="submit">Rank Candidates with AI →</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        function prefillJD() { const s = document.getElementById('cs'); const jd = s.options[s.selectedIndex].getAttribute('data-jd'); if (jd) document.getElementById('rj').value = jd; }
+        async function aiGenerate(srcId, targetId, loaderId) {
+            const val = document.getElementById(srcId).value; if (!val) { alert('Please fill in the job title first.'); return; }
+            document.getElementById(targetId).value = ''; document.getElementById(loaderId).style.display = 'block';
+            try {
+                const res = await fetch('/api/generate_jd', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ course: val }) });
+                const data = await res.json(); document.getElementById(targetId).value = data.jd;
+            } catch (e) { document.getElementById(targetId).value = 'Error generating.'; }
+            document.getElementById(loaderId).style.display = 'none';
+        }
+    </script>
+</body>
+</html>

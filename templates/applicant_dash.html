@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Applicant Dashboard | HireAI</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* This is the Professional Font Stack */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: #f4f7f6; 
+            -webkit-font-smoothing: antialiased;
+        }
+        .navbar { background: #667eea; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .card-custom { border-radius: 15px; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .score-display { color: #28a745; font-size: 3.5rem; font-weight: 800; line-height: 1; margin-top: 10px; }
+        .btn-primary { background: #667eea; border: none; border-radius: 8px; font-weight: 600; padding: 12px; }
+        .btn-primary:hover { background: #764ba2; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark px-4">
+        <span class="navbar-brand font-weight-bold">✨ My HireAI Dashboard</span>
+        <a href="/logout" class="btn btn-outline-light btn-sm font-weight-bold">Logout</a>
+    </nav>
+
+    <div class="container py-5">
+        {% if not profile %}
+        <div class="card card-custom p-5 mx-auto shadow-sm" style="max-width: 600px;">
+            <h4 class="text-primary mb-3 font-weight-bold text-center">Post Your Application</h4>
+            <p class="text-muted text-center mb-4">Upload your resume and let our AI match you with the best opportunities.</p>
+            
+            <form action="/submit_profile" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label class="font-weight-bold text-secondary">Target Position</label>
+                    <select name="course" class="form-control bg-light" required>
+                        <option value="" disabled selected>Select a role...</option>
+                        {% for c in courses %}<option value="{{c.name}}">{{c.name}}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="font-weight-bold text-secondary">Years of Experience</label>
+                    <input type="number" name="exp" class="form-control bg-light" placeholder="e.g. 2" min="0" required>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="font-weight-bold text-secondary">Upload Resume (PDF/DOCX)</label>
+                    <input type="file" name="resume" class="form-control-file" required>
+                </div>
+                <button class="btn btn-primary btn-block shadow-sm">Submit Application </button>
+            </form>
+        </div>
+
+        {% else %}
+        <div class="card card-custom p-5 shadow-sm text-center mx-auto" style="max-width: 700px;">
+            <div class="row align-items-center">
+                <div class="col-md-7 text-md-left text-center border-right">
+                    <h6 class="text-muted font-weight-bold text-uppercase">Application Status</h6>
+                    <h1 class="display-4 font-weight-bold text-primary mb-4">{{ profile.status }}</h1>
+                    
+                    <div class="p-3 bg-light rounded text-left" style="border-left: 4px solid #667eea;">
+                        <h6 class="font-weight-bold text-secondary mb-1">💬 HR Feedback:</h6>
+                        <span class="text-dark" style="font-size: 1.1rem;">{{ profile.feedback }}</span>
+                    </div>
+                </div>
+                
+                <div class="col-md-5 mt-4 mt-md-0 text-center">
+                    <h6 class="text-muted font-weight-bold text-uppercase">AI Match Accuracy</h6>
+                    <div class="score-display">{{ profile.score }}%</div>
+                    <p class="text-muted mt-2 small font-weight-bold">Based on Keyword & Semantic Analysis</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

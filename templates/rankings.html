@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireAI — Rankings</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --ink: #0a0a14; --bg: #f3f4f8; --surface: #fff; --muted: #6b7280; --accent: #2563eb; --border: #e5e7eb; --success: #059669; --danger: #dc2626;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        body { font-family: var(--font-sans); background: var(--bg); color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+        nav { background: #0f172a; height: 62px; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+        .nav-left { display: flex; align-items: center; gap: 12px; }
+        .logo-mark { width: 32px; height: 32px; background: #2563eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 14px; color: #fff; }
+        .nav-brand { font-family: var(--font-display); font-weight: 700; font-size: 17px; color: #fff; letter-spacing: -0.3px; }
+        .btn-back { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.1); padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; transition: 0.2s; }
+        .btn-back:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+        #jd-store { display: none; }
+        .main { max-width: 1100px; margin: 0 auto; padding: 44px 28px; }
+        .page-header { margin-bottom: 36px; }
+        .page-title { font-family: var(--font-display); font-size: 30px; font-weight: 800; letter-spacing: -0.6px; }
+        .page-sub { font-size: 14px; font-weight: 500; color: var(--muted); margin-top: 5px; }
+        .course-tag { display: inline-block; background: #eff6ff; color: var(--accent); font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 20px; border: 1px solid #bfdbfe; margin-left: 10px; vertical-align: middle; }
+
+        .top3-section { margin-bottom: 40px; }
+        .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 16px; }
+        .top3-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .rank-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; position: relative; transition: 0.2s; }
+        .rank-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); }
+        .rank-card-top { padding: 22px 22px 16px; border-bottom: 1px solid var(--border); position: relative; }
+        .rank-num-badge { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 13px; font-weight: 800; }
+        .rank-1 .rank-num-badge { background: #fef3c7; color: #92400e; } .rank-2 .rank-num-badge { background: #f1f5f9; color: #475569; } .rank-3 .rank-num-badge { background: #fff7ed; color: #9a3412; }
+        .rank-1 { border-top: 3px solid #f59e0b; } .rank-2 { border-top: 3px solid #94a3b8; } .rank-3 { border-top: 3px solid #fb923c; }
+
+        .rank-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #2563eb, #7c3aed); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 18px; color: #fff; margin-bottom: 12px; }
+        .rank-name { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+        .rank-score { font-family: var(--font-display); font-size: 30px; font-weight: 800; color: var(--success); line-height: 1; letter-spacing: -1px; }
+        .rank-score-label { font-size: 12px; font-weight: 500; color: var(--muted); margin-top: 2px; }
+        .score-bar-track { height: 5px; background: #e5e7eb; border-radius: 3px; overflow: hidden; margin: 14px 0 0; }
+        .score-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #2563eb, #06b6d4); }
+        .rank-card-bottom { padding: 14px 22px; }
+        .preview-text { font-size: 12px; color: var(--muted); line-height: 1.6; max-height: 80px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; }
+        .btn-analyze { width: 100%; margin-top: 14px; padding: 10px; background: #eff6ff; color: var(--accent); border: 1px solid #bfdbfe; border-radius: 9px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-analyze:hover { background: #dbeafe; }
+
+        .table-section { background: #fff; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+        .table-head { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .table-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; }
+        .table-count { font-size: 13px; font-weight: 500; color: var(--muted); }
+        table { width: 100%; border-collapse: collapse; }
+        thead th { padding: 12px 20px; text-align: left; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; background: #f9fafb; border-bottom: 1px solid var(--border); }
+        tbody tr { border-bottom: 1px solid var(--border); transition: 0.15s; } tbody tr:hover { background: #f9fafb; }
+        tbody td { padding: 14px 20px; font-size: 14px; vertical-align: middle; }
+        .td-rank { font-family: var(--font-display); font-weight: 700; color: var(--muted); font-size: 13px; }
+        .td-name { font-weight: 600; }
+        .td-score { font-family: var(--font-display); font-weight: 800; color: var(--success); }
+
+        .status-pill { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .status-pending { background: #fef3c7; color: #92400e; } .status-selected { background: #d1fae5; color: #065f46; } .status-rejected { background: #fee2e2; color: #991b1b; }
+        .inline-form { display: flex; align-items: center; gap: 8px; }
+        .inline-form select, .inline-form input[type=text] { padding: 7px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-family: var(--font-sans); font-size: 13px; background: #fafafa; outline: none; }
+        .inline-form select:focus, .inline-form input:focus { border-color: var(--accent); }
+        .btn-save { padding: 7px 14px; background: #1d4ed8; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: #fff; border-radius: 20px; width: 600px; max-width: 95vw; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.2); }
+        .modal-header { padding: 22px 28px; background: #0f172a; display: flex; align-items: center; justify-content: space-between; }
+        .modal-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: #fff; }
+        .modal-close { background: rgba(255,255,255,0.1); border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .modal-body { padding: 28px; }
+        .loader { text-align: center; padding: 32px 0; }
+        .spinner { width: 36px; height: 36px; border: 3px solid #e5e7eb; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 12px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loader p { font-size: 14px; font-weight: 500; color: var(--muted); }
+
+        .analysis-result { display: none; }
+        .analysis-section { margin-bottom: 20px; }
+        .analysis-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 8px; }
+        .analysis-text { font-size: 14px; line-height: 1.65; color: #374151; padding: 14px; background: #f9fafb; border-radius: 10px; border: 1px solid var(--border); }
+        .tags-row { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { padding: 4px 11px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .tag.matched { background: #d1fae5; color: #065f46; } .tag.missing { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-left"><div class="logo-mark">H</div><span class="nav-brand">HireAI</span></div>
+        <a href="/dashboard" class="btn-back">← Back to Dashboard</a>
+    </nav>
+    <div id="jd-store">{{ jd }}</div>
+    <div class="main">
+        <div class="page-header"><h1 class="page-title">AI Rankings <span class="course-tag">{{ course }}</span></h1><p class="page-sub">Candidates ranked by semantic similarity and keyword match against your job description</p></div>
+        {% if candidates[:3] %}
+        <div class="top3-section">
+            <div class="section-label">Top Performers</div>
+            <div class="top3-grid">
+                {% for c in candidates[:3] %}
+                <div class="rank-card rank-{{ loop.index }}">
+                    <div class="rank-card-top"><div class="rank-num-badge">#{{ loop.index }}</div><div class="rank-avatar">{{ c.user.username[0] | upper }}</div><div class="rank-name">{{ c.user.username }}</div><div class="rank-score">{{ c.score }}<span style="font-size:16px;color:var(--muted)">%</span></div><div class="rank-score-label">AI Match Score</div><div class="score-bar-track"><div class="score-bar-fill" style="width:{{ c.score }}%"></div></div></div>
+                    <div class="rank-card-bottom"><div class="preview-text">{{ c.preview_text }}</div><button class="btn-analyze" onclick="openAnalysis({{ c.id }}, '{{ c.user.username }}')">✦ Gemini AI Analysis</button></div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        <div class="table-section">
+            <div class="table-head"><span class="table-title">All Candidates</span><span class="table-count">{{ candidates | length }} applicants</span></div>
+            <table>
+                <thead><tr><th>Rank</th><th>Candidate</th><th>AI Score</th><th>Status</th><th>Update Decision</th></tr></thead>
+                <tbody>
+                    {% for c in candidates %}
+                    <tr>
+                        <td class="td-rank">#{{ loop.index }}</td><td class="td-name">{{ c.user.username }}</td><td class="td-score">{{ c.score }}%</td>
+                        <td>{% if c.status == 'Selected' %}<span class="status-pill status-selected">✓ Selected</span>{% elif c.status == 'Rejected' %}<span class="status-pill status-rejected">✕ Rejected</span>{% else %}<span class="status-pill status-pending">Pending</span>{% endif %}</td>
+                        <td>
+                            <form action="/update_status/{{ c.id }}" method="POST"><div class="inline-form"><select name="status"><option value="Selected">Select</option><option value="Rejected">Reject</option><option value="Pending">Pending</option></select><input type="text" name="feedback" placeholder="Add feedback..."><button type="submit" class="btn-save">Save</button></div></form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-header"><span class="modal-title">✦ Gemini AI Analysis — <span id="modal-name"></span></span><button class="modal-close" onclick="closeModal()">×</button></div>
+            <div class="modal-body">
+                <div class="loader" id="loader"><div class="spinner"></div><p>Gemini is analyzing the candidate...</p></div>
+                <div class="analysis-result" id="result">
+                    <div class="analysis-section"><div class="analysis-label">Summary</div><div class="analysis-text" id="r-summary"></div></div>
+                    <div class="analysis-section"><div class="analysis-label">Matched Skills</div><div class="tags-row" id="r-matched"></div></div>
+                    <div class="analysis-section"><div class="analysis-label">Missing Skills</div><div class="tags-row" id="r-missing"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function openAnalysis(id, name) {
+            document.getElementById('modal-name').textContent = name; document.getElementById('loader').style.display = 'block'; document.getElementById('result').style.display = 'none'; document.getElementById('modal').classList.add('open');
+            fetch('/api/analyze_candidate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ profile_id: id, jd: document.getElementById('jd-store').textContent }) })
+            .then(r => r.json()).then(d => {
+                document.getElementById('r-summary').textContent = d.summary || '';
+                const m = document.getElementById('r-matched'); m.innerHTML = ''; (Array.isArray(d.matched) ? d.matched : (d.matched || '').split(',')).forEach(s => { if(s.trim()){ const t=document.createElement('span'); t.className='tag matched'; t.textContent=s.trim(); m.appendChild(t); } });
+                const ms = document.getElementById('r-missing'); ms.innerHTML = ''; (Array.isArray(d.missing) ? d.missing : (d.missing || '').split(',')).forEach(s => { if(s.trim()){ const t=document.createElement('span'); t.className='tag missing'; t.textContent=s.trim(); ms.appendChild(t); } });
+                document.getElementById('loader').style.display = 'none'; document.getElementById('result').style.display = 'block';
+            }).catch(() => { document.getElementById('r-summary').textContent = 'Analysis failed.'; document.getElementById('loader').style.display = 'none'; document.getElementById('result').style.display = 'block'; });
+        }
+        function closeModal() { document.getElementById('modal').classList.remove('open'); }
+        document.getElementById('modal').addEventListener('click', function(e) { if(e.target === this) closeModal(); });
+    </script>
+</body>
+</html>     

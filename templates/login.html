@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireAI — Intelligent Recruitment</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --ink: #0a0a14; --surface: #ffffff; --muted: #6b7280;
+            --accent: #2563eb; --accent-soft: #dbeafe; --success: #059669;
+            --border: #e5e7eb; --radius: 14px;
+            /* Updated Professional Font Stack */
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: #f3f4f8;
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+            -webkit-font-smoothing: antialiased; /* Makes fonts look sharper on Mac */
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Abstract geometric background */
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background: radial-gradient(ellipse 80% 50% at 20% 50%, rgba(37,99,235,0.08) 0%, transparent 60%),
+                        radial-gradient(ellipse 60% 80% at 80% 20%, rgba(5,150,105,0.06) 0%, transparent 60%);
+            z-index: 0;
+        }
+
+        .bg-shapes { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+        .shape { position: absolute; border-radius: 50%; filter: blur(1px); opacity: 0.06; }
+        .shape-1 { width: 600px; height: 600px; background: #2563eb; top: -200px; right: -100px; }
+        .shape-2 { width: 400px; height: 400px; background: #059669; bottom: -100px; left: -100px; }
+        .shape-3 { width: 200px; height: 200px; background: #7c3aed; top: 40%; left: 10%; }
+
+        .grid-dots {
+            position: fixed; inset: 0; z-index: 0;
+            background-image: radial-gradient(#2563eb22 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        .wrapper {
+            position: relative; z-index: 1; display: flex; width: 100%; max-width: 960px;
+            min-height: 560px; border-radius: 24px; overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.14), 0 2px 4px rgba(0,0,0,0.04); margin: 24px;
+        }
+
+        /* Left branding panel */
+        .brand-panel {
+            flex: 1; background: linear-gradient(145deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%);
+            padding: 52px 44px; display: flex; flex-direction: column; justify-content: space-between;
+            position: relative; overflow: hidden;
+        }
+
+        .brand-panel::after {
+            content: ''; position: absolute; bottom: -80px; right: -80px; width: 320px; height: 320px;
+            border-radius: 50%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+        }
+        .brand-panel::before {
+            content: ''; position: absolute; top: -40px; right: 60px; width: 160px; height: 160px;
+            border-radius: 50%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo-mark {
+            width: 36px; height: 36px; background: #2563eb; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-display); font-weight: 800; font-size: 16px; color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .logo-name { font-family: var(--font-display); font-weight: 700; font-size: 20px; color: #fff; letter-spacing: -0.3px; }
+
+        .brand-content { position: relative; z-index: 1; }
+        .brand-headline {
+            font-family: var(--font-display); font-size: 38px; font-weight: 800; color: #fff;
+            line-height: 1.15; letter-spacing: -0.8px; margin-bottom: 16px;
+        }
+        .brand-headline span { color: #60a5fa; }
+        .brand-sub { font-size: 15px; color: rgba(255,255,255,0.7); line-height: 1.6; max-width: 280px; }
+
+        .brand-stats { display: flex; gap: 28px; position: relative; z-index: 1; }
+        .stat-num { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: #fff; letter-spacing: -0.5px; }
+        .stat-label { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.55); margin-top: 2px; }
+
+        /* Right form panel */
+        .form-panel { width: 420px; background: #fff; padding: 52px 44px; display: flex; flex-direction: column; justify-content: center; }
+
+        .panel-title { font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--ink); letter-spacing: -0.5px; margin-bottom: 6px; }
+        .panel-sub { font-size: 14px; color: var(--muted); margin-bottom: 32px; }
+
+        .tab-row { display: flex; gap: 4px; background: #f1f5f9; border-radius: 10px; padding: 4px; margin-bottom: 28px; }
+        .tab-btn {
+            flex: 1; padding: 9px; border: none; background: transparent;
+            border-radius: 7px; font-family: var(--font-sans); font-size: 14px;
+            font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.2s;
+        }
+        .tab-btn.active { background: #fff; color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+        .form-box { display: none; }
+        .form-box.active { display: block; }
+
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+        .field input, .field select {
+            width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px;
+            font-family: var(--font-sans); font-size: 14px; color: var(--ink);
+            background: #fafafa; transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+        }
+        .field input:focus, .field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); background: #fff; }
+        .field select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
+
+        .btn-primary, .btn-success {
+            width: 100%; padding: 13px; border: none; border-radius: 10px;
+            font-family: var(--font-sans); font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; margin-top: 4px;
+        }
+        .btn-primary { background: #1d4ed8; color: #fff; }
+        .btn-primary:hover { background: #1e40af; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(29,78,216,0.3); }
+        .btn-success { background: #059669; color: #fff; }
+        .btn-success:hover { background: #047857; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(5,150,105,0.3); }
+
+        @media (max-width: 700px) {
+            .brand-panel { display: none; }
+            .form-panel { width: 100%; padding: 40px 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+    <div class="grid-dots"></div>
+
+    <div class="wrapper">
+        <div class="brand-panel">
+            <div class="logo">
+                <div class="logo-mark">H</div>
+                <span class="logo-name">HireAI</span>
+            </div>
+            <div class="brand-content">
+                <h1 class="brand-headline">Hire <span>smarter</span><br>with AI-driven<br>matching</h1>
+                <p class="brand-sub">Our platform uses semantic AI to rank candidates and match skills to job requirements — instantly.</p>
+            </div>
+            <div class="brand-stats">
+                <div class="stat"><div class="stat-num">98%</div><div class="stat-label">Match Accuracy</div></div>
+                <div class="stat"><div class="stat-num">3×</div><div class="stat-label">Faster Hiring</div></div>
+                <div class="stat"><div class="stat-num">AI</div><div class="stat-label">Powered Insight</div></div>
+            </div>
+        </div>
+
+        <div class="form-panel">
+            <p class="panel-title">Welcome back</p>
+            <p class="panel-sub">Sign in to your account or create a new one</p>
+
+            <div class="tab-row">
+                <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+                <button class="tab-btn" onclick="switchTab('register')">Create Account</button>
+            </div>
+
+            <div class="form-box active" id="tab-login">
+                <form action="/login" method="POST">
+                    <div class="field"><label>Username</label><input type="text" name="username" placeholder="your_username" required></div>
+                    <div class="field"><label>Password</label><input type="password" name="password" placeholder="••••••••" required></div>
+                    <button class="btn-primary" type="submit">Sign In →</button>
+                </form>
+            </div>
+
+            <div class="form-box" id="tab-register">
+                <form action="/register" method="POST">
+                    <div class="field"><label>Username</label><input type="text" name="username" placeholder="Choose a username" required></div>
+                    <div class="field"><label>Email Address</label><input type="email" name="email" placeholder="you@example.com" required></div>
+                    <div class="field"><label>Password</label><input type="password" name="password" placeholder="Create a password" required></div>
+                    <div class="field">
+                        <label>I am a...</label>
+                        <select name="role">
+                            <option value="applicant">Job Applicant</option>
+                            <option value="recruiter">Recruiter / HR</option>
+                        </select>
+                    </div>
+                    <button class="btn-success" type="submit">Create Account →</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', (i === 0) === (tab === 'login')));
+            document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+            document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+        }
+    </script>
+</body>
+</html>
