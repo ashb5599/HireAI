@@ -24,5 +24,5 @@ HireAI is an AI-powered Applicant Tracking System (ATS) that automates the recru
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/Yashb5599/HireAI.git](https://github.com/YOUR_USERNAME/HireAI.git)
+   git clone [https://github.com/ashb5599/HireAI.git](https://github.com/ashb5599/HireAI.git)
    cd HireAI
